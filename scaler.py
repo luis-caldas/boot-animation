@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/usr/bin/env nix-shell
+#!nix-shell --pure -i python3 -p python39Packages.Wand
 # -*- coding: utf-8 -*-
 
 # normal imports
