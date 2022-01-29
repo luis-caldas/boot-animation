@@ -46,7 +46,7 @@ def main():
         top_img = WandImage()
         with WandColor("transparent") as background_color:
             WandLibrary.MagickSetBackgroundColor(top_img.wand, background_color.resource)
-        top_img.read(filename="assets/top.svg")
+        top_img.read(filename="assets/top.png")
         top_img.resize(top_size, top_size)
 
         # store the data
