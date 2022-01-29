@@ -17,7 +17,7 @@ import config
 
 
 def iprint(*strin, success=False) -> None:
-    print("[  %s%s%s  ]" % (
+    print("[ %s %s %s ]" % (
         "\033[93;1m" if not success else "\033[92;1m", "!" if not success else "✓", "\033[0m"
     ), *strin)
 
