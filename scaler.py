@@ -23,7 +23,7 @@ def iprint(*strin, success=False) -> None:
     ), *strin)
 
 
-def build_android(default_assets_path, bottom_imgs):
+def build_android(default_assets_path, distribute_path, bottom_imgs):
     iprint("Loading resolutions")
 
     # Store the different types of top images
@@ -111,7 +111,7 @@ def build_android(default_assets_path, bottom_imgs):
 
     # Create the bootanimations
     for name, each in images.items():
-        ref_path = os.path.join(config.DISTRIBUTE, config.ANDROID_FOLDER, name)
+        ref_path = os.path.join(distribute_path, config.ANDROID_FOLDER, name)
         each["path"] = ref_path
         if os.path.exists(ref_path):
             shutil.rmtree(ref_path)
@@ -142,11 +142,11 @@ def build_android(default_assets_path, bottom_imgs):
     iprint("Done Android", success=True)
 
 
-def build_plymouth(default_assets_path, default_script_path, bottom_imgs):
+def build_plymouth(default_assets_path, default_script_path, distribute_path, bottom_imgs):
     iprint("Creating plymouth theme")
 
     # Create the folder
-    plym = os.path.join(config.DISTRIBUTE, config.PLYMOUTH_FOLDER)
+    plym = os.path.join(distribute_path, config.PLYMOUTH_FOLDER)
     if os.path.exists(plym):
         shutil.rmtree(plym)
     os.makedirs(plym)
@@ -246,16 +246,19 @@ def main():
     default_script_path = os.path.join(
         local_path, "assets", "scripts"
     )
+    distribute_path = os.path.join(
+        local_path, config.DISTRIBUTE
+    )
 
     # Get all the bottom images
     bottom_imgs = sorted([name for name in os.listdir(default_assets_path) if "bottom" in name])
 
     # Call functions
     if args.system in [default_argument, config.ANDROID_FOLDER]:
-        build_android(default_assets_path, bottom_imgs)
+        build_android(default_assets_path, distribute_path, bottom_imgs)
 
     if args.system in [default_argument, config.PLYMOUTH_FOLDER]:
-        build_plymouth(default_assets_path, default_script_path, bottom_imgs)
+        build_plymouth(default_assets_path, default_script_path, distribute_path, bottom_imgs)
 
 
 if __name__ == "__main__":
