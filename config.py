@@ -1,5 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
-REFRESH_RATE = 24
+# Defaults
+DEFAULT_THEME="main"
+RESOLUTIONS="resolutions.json"
+
+# Android
+REFRESH_RATE = 60
 FOLDER_NAME = "part0"
