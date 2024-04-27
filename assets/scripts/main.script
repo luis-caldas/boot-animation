@@ -1,14 +1,18 @@
-
 // Outside variables
-number_of_images = %NUM_IMAGES%
-password_message = "%PASS_MSG%"
-bullet_character = "%BULLET_CHAR%"
+numberImages = %NUM_IMAGES%;
+passwordMessage = "%PASS_MSG%";
+bulletCharacter = "%BULLET_CHAR%";
+questionPrompt = "%QUESTION_PROMPT%";
 
 // Screen size
 screen.w = Window.GetWidth(0);
 screen.h = Window.GetHeight(0);
 screen.half.w = Window.GetWidth(0) / 2;
 screen.half.h = Window.GetHeight(0) / 2;
+screen.quarter.top = Window.GetHeight(0) / 4;
+
+// Reduction sizes
+topReduction = 2;
 
 // Question prompt
 question = null;
@@ -20,7 +24,7 @@ message = null;
 // Password prompt
 bullets = null;
 prompt = null;
-bullet.image = Image.Text(bullet_character, 1, 1, 1);
+bulletImage = Image.Text(bulletCharacter, 1, 1, 1);
 
 // Flow
 status = "play";
@@ -37,7 +41,23 @@ Window.SetBackgroundBottomColor (0, 0, 0);
 //------------------//
 
 if (Plymouth.GetMode() != "suspend" && Plymouth.GetMode() != "resume") {
-  logo = ImageNew("top.png");
+
+    // Get the top image
+    logo.image = ImageNew("top.png");
+
+    // Scale image
+    logo.image = logo.image.Scale(logo.image.GetWidth() / topReduction, logo.image.GetHeight() / topReduction);
+
+    // Create sprite
+    logo.sprite = Sprite();
+
+    // Set sprite position
+    logo.sprite.SetX(Window.GetX() + (screen.half.w - logo.image.GetWidth() / 2));
+    logo.sprite.SetY(Window.GetY() + (screen.quarter.top - logo.image.GetHeight() / 2));
+
+    // Load image
+    logo.sprite.SetImage(logo.image);
+
 }
 
 //---------------------------//
@@ -45,13 +65,16 @@ if (Plymouth.GetMode() != "suspend" && Plymouth.GetMode() != "resume") {
 //---------------------------//
 
 // Cycle through all the images and add them to the list
-for (i = 0; i < number_of_images; i++)
-  images[i] = Image("bottom" + i + ".png");
-sprite_now = Sprite();
+for (i = 1; i <= numberImages; i++) {
+    bottom.images[i - 1] = Image("bottom" + i + ".png");
+}
+
+// Create the sprite for the spinner
+bottom.sprite = Sprite();
 
 // Set the position of the images in the center of the screen
-sprite_now.SetX(Window.GetX() + (Window.GetWidth(0) / 2 - images[0].GetWidth() / 2));
-sprite_now.SetY(Window.GetY() + (Window.GetHeight(0) / 2 - images[0].GetHeight() / 2));
+bottom.sprite.SetX(Window.GetX() + (screen.half.w - bottom.images[0].GetWidth() / 2));
+bottom.sprite.SetY(Window.GetY() + (screen.half.h - bottom.images[0].GetHeight() / 2));
 
 // Counter for the loading progress
 progress = 0;
@@ -62,23 +85,23 @@ progress = 0;
 
 fun refresh_callback() {
 
-  // Only show spinner if not in password mode
-  if (status == "play") {
+    // Only show spinner if not in password mode
+    if (status == "play") {
 
-    // Set the image
-    sprite_now.SetOpacity(1);
-    sprite_now.SetImage(images[progress]);
+        // Set the image
+        bottom.sprite.SetOpacity(1);
+        bottom.sprite.SetImage(bottom.images[progress]);
 
-    // Update the progress
-    progress++;
-    progress %= number_of_images;
+        // Update the progress
+        progress++;
+        progress %= numberImages;
 
-  } else {
+    } else {
 
-    // Hide the image
-    sprite_now.SetOpacity(0);
+        // Hide the image
+        bottom.sprite.SetOpacity(0);
 
-  }
+    }
 
 }
 Plymouth.SetRefreshFunction (refresh_callback);
@@ -88,21 +111,30 @@ Plymouth.SetRefreshFunction (refresh_callback);
 //-----------------//
 
 fun DisplayQuestionCallback(prompt, entry) {
+
+    // Pause the animation
+    status = "pause";
+
+    // Reset variables
     question = null;
     answer = null;
 
+    // Change empty question
     if (entry == "")
-        entry = "<answer>";
+        entry = questionPrompt;
 
+    // Create the question
     question.image = Image.Text(prompt, 1, 1, 1);
     question.sprite = Sprite(question.image);
     question.sprite.SetX(screen.half.w - question.image.GetWidth() / 2);
     question.sprite.SetY(screen.h - 4 * question.image.GetHeight());
 
+    // Show the answer
     answer.image = Image.Text(entry, 1, 1, 1);
     answer.sprite = Sprite(answer.image);
     answer.sprite.SetX(screen.half.w - answer.image.GetWidth() / 2);
     answer.sprite.SetY(screen.h - 2 * answer.image.GetHeight());
+
 }
 Plymouth.SetDisplayQuestionFunction(DisplayQuestionCallback);
 
@@ -111,22 +143,29 @@ Plymouth.SetDisplayQuestionFunction(DisplayQuestionCallback);
 //-----------------//
 
 fun DisplayPasswordCallback(nil, bulletCount) {
-    global.status = "pause";
-    totalWidth = bulletCount * bullet.image.GetWidth();
+
+    // Pause the animation
+    status = "pause";
+
+    // Calculate the position and size of the typing area
+    totalWidth = bulletCount * bulletImage.GetWidth();
     startPos = screen.half.w - totalWidth / 2;
 
-    prompt.image = Image.Text(password_message, 1, 1, 1);
+    // Create the Image
+    prompt.image = Image.Text(passwordMessage, 1, 1, 1);
     prompt.sprite = Sprite(prompt.image);
     prompt.sprite.SetX(screen.half.w - prompt.image.GetWidth() / 2);
     prompt.sprite.SetY(screen.h - 4 * prompt.image.GetHeight());
 
     // Clear all bullets (user might hit backspace)
     bullets = null;
+    // Iterate the bullets and create them
     for (i = 0; i < bulletCount; i++) {
-        bullets[i].sprite = Sprite(bullet.image);
-        bullets[i].sprite.SetX(startPos + i * bullet.image.GetWidth());
-        bullets[i].sprite.SetY(screen.h - 2 * bullet.image.GetHeight());
+        bullets[i].sprite = Sprite(bulletImage);
+        bullets[i].sprite.SetX(startPos + i * bulletImage.GetWidth());
+        bullets[i].sprite.SetY(screen.h - 2 * bulletImage.GetHeight());
     }
+
 }
 Plymouth.SetDisplayPasswordFunction(DisplayPasswordCallback);
 
@@ -135,12 +174,15 @@ Plymouth.SetDisplayPasswordFunction(DisplayPasswordCallback);
 //----------------//
 
 fun DisplayNormalCallback() {
-    global.status = "play";
+
+    // Reset everything to normal
+    status = "play";
     bullets = null;
     prompt = null;
     message = null;
     question = null;
     answer = null;
+
 }
 Plymouth.SetDisplayNormalFunction(DisplayNormalCallback);
 
@@ -149,9 +191,12 @@ Plymouth.SetDisplayNormalFunction(DisplayNormalCallback);
 //--------------//
 
 fun MessageCallback(text) {
+
+    // Simply show the message
     message.image = Image.Text(text, 1, 1, 1);
     message.sprite = Sprite(message.image);
     message.sprite.SetPosition(screen.half.w - message.image.GetWidth() / 2, message.image.GetHeight());
+
 }
 Plymouth.SetMessageFunction(MessageCallback);
 

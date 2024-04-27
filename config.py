@@ -18,6 +18,7 @@ PLYMOUTH_THEME = "main_custom"
 FIND_CHAR = '%'
 REPLACE_SCRIPT = {
     "PASS_MSG": "Authenticate",
+    "QUESTION_PROMPT": "Answer",
     "BULLET_CHAR": '◊'
 }
 REPLACE_PLYMOUTH = {
