@@ -146,7 +146,7 @@ def build_plymouth(default_assets_path, default_script_path, bottom_imgs):
     iprint("Creating plymouth theme")
 
     # Create the folder
-    plym = os.path.join(config.DISTRIBUTE, config.PLYMOUT_FOLDER)
+    plym = os.path.join(config.DISTRIBUTE, config.PLYMOUTH_FOLDER)
     if os.path.exists(plym):
         shutil.rmtree(plym)
     os.makedirs(plym)
@@ -168,15 +168,31 @@ def build_plymouth(default_assets_path, default_script_path, bottom_imgs):
                 os.path.join(plym, fixed_name)
             )
 
-    # Copy the script file over
-    shutil.copy(
-        os.path.join(default_script_path, f"{config.DEFAULT_THEME}.plymouth"),
-        plym
-    )
+    # Replace and copy over the main plymouth file
+    original_name = f"{config.DEFAULT_THEME}.plymouth"
+    target_name = f"{config.PLYMOUTH_THEME}.plymouth"
+    with open(os.path.join(default_script_path, original_name), 'r') as original:
+
+        # Read the entire file
+        file_text = original.read()
+
+        # Replace everything
+        for repl_name, repl_value in config.REPLACE_PLYMOUTH.items():
+            file_text = re.sub(
+                f"{config.FIND_CHAR}{repl_name}{config.FIND_CHAR}",
+                repl_value,
+                file_text
+            )
+
+        # Open the target
+        with open(os.path.join(plym, target_name), 'w') as target:
+            # Write it
+            target.write(file_text)
 
     # Replace and copy over the main script file
-    target_name = f"{config.DEFAULT_THEME}.script"
-    with open(os.path.join(default_script_path, target_name), 'r') as original:
+    original_name = f"{config.DEFAULT_THEME}.script"
+    target_name = f"{config.PLYMOUTH_THEME}.script"
+    with open(os.path.join(default_script_path, original_name), 'r') as original:
 
         # Read the entire file
         file_text = original.read()
@@ -184,7 +200,7 @@ def build_plymouth(default_assets_path, default_script_path, bottom_imgs):
         # Add manual values
         replace_all = {
             "NUM_IMAGES": str(len(bottom_imgs)),
-            **config.REPLACE
+            **config.REPLACE_SCRIPT
         }
 
         # Replace everything
@@ -211,7 +227,7 @@ def main():
     default_argument = "all"
     parser.add_argument(
         "system",
-        choices=[default_argument, config.ANDROID_FOLDER, config.PLYMOUT_FOLDER],
+        choices=[default_argument, config.ANDROID_FOLDER, config.PLYMOUTH_FOLDER],
         default=default_argument,
         nargs='?',
         help="Select system"
@@ -236,7 +252,7 @@ def main():
     if args.system in [default_argument, config.ANDROID_FOLDER]:
         build_android(default_assets_path, bottom_imgs)
 
-    if args.system in [default_argument, config.PLYMOUT_FOLDER]:
+    if args.system in [default_argument, config.PLYMOUTH_FOLDER]:
         build_plymouth(default_assets_path, default_script_path, bottom_imgs)
 
 

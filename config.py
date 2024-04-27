@@ -1,23 +1,27 @@
 #!/usr/bin/env python
 
 # Defaults
-DEFAULT_THEME="main"
+DEFAULT_THEME = "main"
 
 # Output
-DISTRIBUTE="dist"
+DISTRIBUTE = "dist"
 
 ############
 # Plymouth #
 ############
 
 # Paths
-PLYMOUT_FOLDER="plymouth"
+PLYMOUTH_FOLDER = "plymouth"
+PLYMOUTH_THEME = "main_custom"
 
 # Replacing
 FIND_CHAR = '%'
-REPLACE = {
+REPLACE_SCRIPT = {
     "PASS_MSG": "Authenticate",
     "BULLET_CHAR": '◊'
+}
+REPLACE_PLYMOUTH = {
+    "PLYMOUTH_THEME": PLYMOUTH_THEME
 }
 
 ###########
@@ -25,7 +29,7 @@ REPLACE = {
 ###########
 
 # Paths
-ANDROID_FOLDER="android"
+ANDROID_FOLDER = "android"
 
 # Building
 REFRESH_RATE = 60

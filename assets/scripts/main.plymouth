@@ -1,9 +1,9 @@
 [Plymouth Theme]
-Name=main_custom
+Name=%PLYMOUTH_THEME%
 Description=Loading animation with top image
 Comment=Created automatically
 ModuleName=script
 
 [script]
-ImageDir=/usr/share/plymouth/themes/main_custom
-ScriptFile=/usr/share/plymouth/themes/main_custom/main.script
+ImageDir=/usr/share/plymouth/themes/%PLYMOUTH_THEME%
+ScriptFile=/usr/share/plymouth/themes/%PLYMOUTH_THEME%/%PLYMOUTH_THEME%.script
