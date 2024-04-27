@@ -17,7 +17,8 @@ import config
 
 def iprint(*strin, success=False) -> None:
     print("[ %s %s %s ]" % (
-        "\033[93;1m" if not success else "\033[92;1m", "!" if not success else "✓", "\033[0m"
+        "\033[93;1m" if not success else "\033[92;1m",
+        "!" if not success else "✓", "\033[0m"
     ), *strin)
 
 
@@ -28,34 +29,34 @@ def main():
     # Get our path
     local_path = os.path.dirname(__file__)
 
-    # Load needed resolutions to memory
-    res = {}
-    with open(os.path.join(local_path, config.RESOLUTIONS), 'r') as file:
-        res = json.load(file)["res"]
-
     # Join the path of the main assets
-    default_assets_path = os.path.join(local_path, "assets", "themes", config.DEFAULT_THEME)
+    default_assets_path = os.path.join(
+        local_path, "assets", "themes", config.DEFAULT_THEME
+    )
 
     # Store the different types of top images
-    top_imgs_ref = []
+    top_imgs_ref = {}
 
     iprint("Loading and resizing top part of images")
 
     # Create the top image for each custom resolution
-    for each in res:
+    for name, resolutions in config.RESOLUTIONS.items():
 
         # The size of the top must the 1/3 of the smallest side
-        top_size = int(min(each) / 3)
+        top_size = int(min(resolutions) / 3)
 
         # Load the top image
         top_img = WandImage()
         with WandColor("transparent") as background_color:
-            WandLibrary.MagickSetBackgroundColor(top_img.wand, background_color.resource)
+            WandLibrary.MagickSetBackgroundColor(
+                top_img.wand, background_color.resource
+            )
         top_img.read(filename=os.path.join(default_assets_path, "top.png"))
+        # Needs to be a square
         top_img.resize(top_size, top_size)
 
         # Store the data
-        top_imgs_ref.append(top_img)
+        top_imgs_ref[name] = top_img
 
     iprint("Counting and loading bottom part of images")
 
@@ -68,12 +69,12 @@ def main():
         bottom_imgs_ref.append(WandImage(filename=os.path.join(default_assets_path, each_img)))
 
     # Files structurer
-    images = []
+    images = {}
 
     iprint("Assembling images")
 
     # Assemble all the images
-    for index, each_top in enumerate(top_imgs_ref):
+    for name, each_top in top_imgs_ref.items():
         # Images for a specific resolution
         specific_images = []
         for each_bottom in bottom_imgs_ref:
@@ -97,42 +98,51 @@ def main():
             specific_images.append(new_img)
 
         # Append it all to the images
-        images.append([res[index], specific_images])
+        images[name] = {
+            "resolutions": config.RESOLUTIONS[name],
+            "list": specific_images
+        }
 
-    iprint("Generating desc.txt files")
+    iprint(f"Generating {config.DESCRIPTION_FILE} files")
 
     # Create the description files
-    for each in images:
+    for name, each in images.items():
         string = "%s\n%s\n" % (
             "%d %d %d" % (
-                each[1][0].width,
-                each[1][0].height,
+                each["list"][0].width,
+                each["list"][0].height,
                 config.REFRESH_RATE
             ),
             "%c %d %d %s" % ('p', 0, 0, config.FOLDER_NAME)
         )
-        each.append(string)
+        each["description"] = string
 
     iprint("Creating output directories")
 
     # Create the bootanimations
-    for each in images:
-        ref_path = os.path.join("dist", "%dx%d" % (each[0][0], each[0][1]))
-        each.append(ref_path)
+    for name, each in images.items():
+        ref_path = os.path.join(config.DISTRIBUTE, config.ANDROID_FOLDER, name)
+        each["path"] = ref_path
         os.makedirs(ref_path, exist_ok=True)
 
     iprint("Zipping files")
 
     # Create the zip files
-    for each in images:
-        zip_now = zipfile.ZipFile(os.path.join(each[3], "bootanimation.zip"), 'w', compression=zipfile.ZIP_STORED)
+    for name, each in images.items():
+        zip_now = zipfile.ZipFile(
+            os.path.join(each["path"], config.OUTPUT_NAME), 'w',
+            compression=zipfile.ZIP_STORED
+        )
 
         # Add the description file
-        zip_now.writestr("desc.txt", each[2])
+        zip_now.writestr(config.DESCRIPTION_FILE, each["description"])
 
         # Iterate the images and write them to the zip
-        for index, each_img in enumerate(each[1]):
-            zip_now.writestr(os.path.join(config.FOLDER_NAME, "part%05d.png" % index), each_img.make_blob("png"))
+        for index, each_img in enumerate(each["list"]):
+            zip_now.writestr(
+                os.path.join(config.FOLDER_NAME, "part%05d.png" % index),
+                each_img.make_blob("png")
+            )
 
         # Close the zip
         zip_now.close()
