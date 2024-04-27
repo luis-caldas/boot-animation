@@ -1,8 +1,8 @@
 
 // Outside variables
 number_of_images = %NUM_IMAGES%
-password_message = %PASS_MSG%
-bullet_character = %BULLET_CHAR%
+password_message = "%PASS_MSG%"
+bullet_character = "%BULLET_CHAR%"
 
 // Screen size
 screen.w = Window.GetWidth(0);
@@ -38,8 +38,6 @@ Window.SetBackgroundBottomColor (0, 0, 0);
 
 if (Plymouth.GetMode() != "suspend" && Plymouth.GetMode() != "resume") {
   logo = ImageNew("top.png");
-  background.original_image = ImageNew("background.png");
-
 }
 
 //---------------------------//

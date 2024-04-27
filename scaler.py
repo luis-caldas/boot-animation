@@ -3,8 +3,10 @@
 
 # Normal imports
 import os
+import re
 import json
 import time
+import shutil
 import zipfile
 
 from wand.api import library as WandLibrary
@@ -24,6 +26,8 @@ def iprint(*strin, success=False) -> None:
 
 def main():
 
+    # TODO add argument parse for which to build
+
     iprint("Loading resolutions")
 
     # Get our path
@@ -32,6 +36,9 @@ def main():
     # Join the path of the main assets
     default_assets_path = os.path.join(
         local_path, "assets", "themes", config.DEFAULT_THEME
+    )
+    default_script_path = os.path.join(
+        local_path, "assets", "scripts"
     )
 
     # Store the different types of top images
@@ -123,7 +130,9 @@ def main():
     for name, each in images.items():
         ref_path = os.path.join(config.DISTRIBUTE, config.ANDROID_FOLDER, name)
         each["path"] = ref_path
-        os.makedirs(ref_path, exist_ok=True)
+        if os.path.exists(ref_path):
+            shutil.rmtree(ref_path)
+        os.makedirs(ref_path)
 
     iprint("Zipping files")
 
@@ -147,7 +156,68 @@ def main():
         # Close the zip
         zip_now.close()
 
-    iprint("Done", success=True)
+    iprint("Done Android", success=True)
+
+    iprint("Creating plymouth theme")
+
+    # Create the folder
+    plym = os.path.join(config.DISTRIBUTE, config.PLYMOUT_FOLDER)
+    if os.path.exists(plym):
+        shutil.rmtree(plym)
+    os.makedirs(plym)
+
+    # Copy files over
+    for each_file in os.listdir(default_assets_path):
+
+        # Get the full path of the file
+        full_file_name = os.path.join(default_assets_path, each_file)
+
+        # Check if is a file
+        if os.path.isfile(full_file_name):
+
+            # Create a proper name for it
+            fixed_name = re.sub(r"0+([1-9])", r"\1", each_file)
+
+            # Copy over
+            shutil.copy(
+                full_file_name,
+                os.path.join(plym, fixed_name)
+            )
+
+    # Copy the script file over
+    shutil.copy(
+        os.path.join(default_script_path, f"{config.DEFAULT_THEME}.plymouth"),
+        plym
+    )
+
+    # Replace and copy over the main script file
+    target_name = f"{config.DEFAULT_THEME}.script"
+    with open(os.path.join(default_script_path, target_name), 'r') as original:
+
+        # Read the entire file
+        file_text = original.read()
+
+        # Add manual values
+        replace_all = {
+            "NUM_IMAGES": str(len(bottom_imgs)),
+            **config.REPLACE
+        }
+
+        # Replace everything
+        for repl_name, repl_value in replace_all.items():
+            file_text = re.sub(
+                f"{config.FIND_CHAR}{repl_name}{config.FIND_CHAR}",
+                repl_value,
+                file_text
+            )
+
+        # Open the target
+        with open(os.path.join(plym, target_name), 'w') as target:
+
+            # Write it
+            target.write(file_text)
+
+    iprint("Done Plymouth", success=True)
 
 
 if __name__ == "__main__":

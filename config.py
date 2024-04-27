@@ -6,18 +6,36 @@ DEFAULT_THEME="main"
 # Output
 DISTRIBUTE="dist"
 
-# Plymouth
+############
+# Plymouth #
+############
+
+# Paths
 PLYMOUT_FOLDER="plymouth"
 
-# Android
+# Replacing
+FIND_CHAR = '%'
+REPLACE = {
+    "PASS_MSG": "Authenticate",
+    "BULLET_CHAR": '◊'
+}
+
+###########
+# Android #
+###########
+
+# Paths
 ANDROID_FOLDER="android"
 
+# Building
 REFRESH_RATE = 60
-FOLDER_NAME = "part0"
 
+# Paths
+FOLDER_NAME = "part0"
 DESCRIPTION_FILE = "desc.txt"
 OUTPUT_NAME = "bootanimation.zip"
 
+# Resolutions
 RESOLUTIONS = {
     "alioth": [1080, 2400],
     "beryllium": [1080, 2246],
