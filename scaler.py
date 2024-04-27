@@ -189,8 +189,6 @@ def build_plymouth(default_assets_path, default_script_path, distribute_path, bo
             # Write it
             target.write(file_text)
 
-    # TODO add answer replacement string
-
     # Replace and copy over the main script file
     original_name = f"{config.DEFAULT_THEME}.script"
     target_name = f"{config.PLYMOUTH_THEME}.script"
