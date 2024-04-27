@@ -4,10 +4,9 @@
 # Normal imports
 import os
 import re
-import json
-import time
 import shutil
 import zipfile
+import argparse
 
 from wand.api import library as WandLibrary
 from wand.color import Color as WandColor
@@ -24,22 +23,8 @@ def iprint(*strin, success=False) -> None:
     ), *strin)
 
 
-def main():
-
-    # TODO add argument parse for which to build
-
+def build_android(default_assets_path, bottom_imgs):
     iprint("Loading resolutions")
-
-    # Get our path
-    local_path = os.path.dirname(__file__)
-
-    # Join the path of the main assets
-    default_assets_path = os.path.join(
-        local_path, "assets", "themes", config.DEFAULT_THEME
-    )
-    default_script_path = os.path.join(
-        local_path, "assets", "scripts"
-    )
 
     # Store the different types of top images
     top_imgs_ref = {}
@@ -48,7 +33,6 @@ def main():
 
     # Create the top image for each custom resolution
     for name, resolutions in config.RESOLUTIONS.items():
-
         # The size of the top must the 1/3 of the smallest side
         top_size = int(min(resolutions) / 3)
 
@@ -68,14 +52,13 @@ def main():
     iprint("Counting and loading bottom part of images")
 
     # Get the bottom parts
-    bottom_imgs = sorted([name for name in os.listdir(default_assets_path) if "bottom" in name])
     bottom_imgs_ref = []
 
     # Iterate the bottom images and load them into memory
     for each_img in bottom_imgs:
         bottom_imgs_ref.append(WandImage(filename=os.path.join(default_assets_path, each_img)))
 
-    # Files structurer
+    # Files structure
     images = {}
 
     iprint("Assembling images")
@@ -158,6 +141,8 @@ def main():
 
     iprint("Done Android", success=True)
 
+
+def build_plymouth(default_assets_path, default_script_path, bottom_imgs):
     iprint("Creating plymouth theme")
 
     # Create the folder
@@ -174,7 +159,6 @@ def main():
 
         # Check if is a file
         if os.path.isfile(full_file_name):
-
             # Create a proper name for it
             fixed_name = re.sub(r"0+([1-9])", r"\1", each_file)
 
@@ -213,11 +197,47 @@ def main():
 
         # Open the target
         with open(os.path.join(plym, target_name), 'w') as target:
-
             # Write it
             target.write(file_text)
 
     iprint("Done Plymouth", success=True)
+
+
+def main():
+    # Arguments
+    parser = argparse.ArgumentParser(
+        description="Build boot animation for my systems"
+    )
+    default_argument = "all"
+    parser.add_argument(
+        "system",
+        choices=[default_argument, config.ANDROID_FOLDER, config.PLYMOUT_FOLDER],
+        default=default_argument,
+        nargs='?',
+        help="Select system"
+    )
+    args = parser.parse_args()
+
+    # Get our path
+    local_path = os.path.dirname(__file__)
+
+    # Join the path of the main assets
+    default_assets_path = os.path.join(
+        local_path, "assets", "themes", config.DEFAULT_THEME
+    )
+    default_script_path = os.path.join(
+        local_path, "assets", "scripts"
+    )
+
+    # Get all the bottom images
+    bottom_imgs = sorted([name for name in os.listdir(default_assets_path) if "bottom" in name])
+
+    # Call functions
+    if args.system in [default_argument, config.ANDROID_FOLDER]:
+        build_android(default_assets_path, bottom_imgs)
+
+    if args.system in [default_argument, config.PLYMOUT_FOLDER]:
+        build_plymouth(default_assets_path, default_script_path, bottom_imgs)
 
 
 if __name__ == "__main__":

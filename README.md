@@ -2,7 +2,7 @@
 
 Simple boot animation that can be scaled to different screen sizes
 
-### Requeriments
+### Requirements
 
 Make, ImageMagick, Python3, and packages located on `requeriments.txt`
 
