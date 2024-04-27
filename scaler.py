@@ -34,7 +34,7 @@ def main():
         res = json.load(file)["res"]
 
     # Join the path of the main assets
-    default_assets_path = os.path.join(local_path, "assets", config.DEFAULT_THEME)
+    default_assets_path = os.path.join(local_path, "assets", "themes", config.DEFAULT_THEME)
 
     # Store the different types of top images
     top_imgs_ref = []
