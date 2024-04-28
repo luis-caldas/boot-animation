@@ -19,7 +19,7 @@ FIND_CHAR = '%'
 REPLACE_SCRIPT = {
     "PASS_MSG": "Authenticate",
     "QUESTION_PROMPT": "Answer",
-    "BULLET_CHAR": '◊'
+    "BULLET_CHAR": '•'
 }
 REPLACE_PLYMOUTH = {
     "PLYMOUTH_THEME": PLYMOUTH_THEME
