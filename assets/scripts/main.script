@@ -12,8 +12,12 @@ screen.half.w = Window.GetWidth(0) / 2;
 screen.half.h = Window.GetHeight(0) / 2;
 screen.quarter.top = Window.GetHeight(0) / 4;
 
+// Text increase
+textIncrease = 8;
+
 // Reduction sizes
-topReduction = 2;
+topReduction = 3;
+bottomReduction = 2;
 
 // Question prompt
 question = null;
@@ -43,8 +47,16 @@ Window.SetBackgroundBottomColor (0, 0, 0);
 
 if (Plymouth.GetMode() != "suspend" && Plymouth.GetMode() != "resume") {
 
-    // Get the top image
-    logo.image = ImageNew("top.png");
+    // Check if we are doing a text top or an image
+    if (logoMessage == "") {
+        // Get the top image
+        logo.image = Image("top.png");
+    } else {
+        // Set the text
+        logo.image = Image.Text(logoMessage, 1, 1, 1);
+        // Blow it up
+        logo.image = logo.image.Scale(logo.image.GetWidth() * textIncrease, logo.image.GetHeight() * textIncrease);
+    }
 
     // Scale image
     logo.image = logo.image.Scale(logo.image.GetWidth() / topReduction, logo.image.GetHeight() / topReduction);
@@ -68,6 +80,7 @@ if (Plymouth.GetMode() != "suspend" && Plymouth.GetMode() != "resume") {
 // Cycle through all the images and add them to the list
 for (i = 1; i <= numberImages; i++) {
     bottom.images[i - 1] = Image("bottom" + i + ".png");
+    bottom.images[i - 1] = bottom.images[i - 1].Scale(bottom.images[i - 1].GetWidth() / bottomReduction, bottom.images[i - 1].GetHeight() / bottomReduction);
 }
 
 // Create the sprite for the spinner
