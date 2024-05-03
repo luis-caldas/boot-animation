@@ -3,6 +3,7 @@ numberImages = %NUM_IMAGES%;
 passwordMessage = "%PASS_MSG%";
 bulletCharacter = "%BULLET_CHAR%";
 questionPrompt = "%QUESTION_PROMPT%";
+logoMessage = "%LOGO_MESSAGE%";
 
 // Screen size
 screen.w = Window.GetWidth(0);
