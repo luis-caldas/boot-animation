@@ -189,8 +189,7 @@ fun DisplayPasswordCallback(nil, bulletCount) {
     } else {
 
         // Calculate the position and size of the typing area
-        totalWidth = bulletCount * passwordImage.GetWidth();
-        startPos = screen.half.w - totalWidth / 2;
+        startPos = screen.half.w - passwordImage.GetWidth() / 2;
 
         // Clear the variable
         now = null;
