@@ -20,6 +20,7 @@ REPLACE_SCRIPT = {
     "LOGO_MESSAGE": "",
     "PASS_MSG": "Authenticate",
     "QUESTION_PROMPT": "Answer",
+    "PASSWORD_TYPING": "...",
     "BULLET_CHAR": '•'
 }
 REPLACE_PLYMOUTH = {
