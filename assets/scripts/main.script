@@ -164,18 +164,18 @@ fun DisplayPasswordCallback(nil, bulletCount) {
     // Pause the animation
     status = "pause";
 
+    // Calculate the position and size of the typing area
+    totalWidth = bulletCount * bulletImage.GetWidth();
+    startPos = screen.half.w - totalWidth / 2;
+
+    // Create the Image
+    prompt.image = Image.Text(passwordMessage, 1, 1, 1);
+    prompt.sprite = Sprite(prompt.image);
+    prompt.sprite.SetX(screen.half.w - prompt.image.GetWidth() / 2);
+    prompt.sprite.SetY(screen.h - 4 * prompt.image.GetHeight());
+
     // Checking if we are showing dots or not
     if (passwordTyping == "") {
-
-        // Calculate the position and size of the typing area
-        totalWidth = bulletCount * bulletImage.GetWidth();
-        startPos = screen.half.w - totalWidth / 2;
-
-        // Create the Image
-        prompt.image = Image.Text(passwordMessage, 1, 1, 1);
-        prompt.sprite = Sprite(prompt.image);
-        prompt.sprite.SetX(screen.half.w - prompt.image.GetWidth() / 2);
-        prompt.sprite.SetY(screen.h - 4 * prompt.image.GetHeight());
 
         // Clear all bullets (user might hit backspace)
         bullets = null;
@@ -202,7 +202,6 @@ fun DisplayPasswordCallback(nil, bulletCount) {
         }
 
     }
-
 
 }
 Plymouth.SetDisplayPasswordFunction(DisplayPasswordCallback);
