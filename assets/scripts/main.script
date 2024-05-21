@@ -164,10 +164,6 @@ fun DisplayPasswordCallback(nil, bulletCount) {
     // Pause the animation
     status = "pause";
 
-    // Calculate the position and size of the typing area
-    totalWidth = bulletCount * bulletImage.GetWidth();
-    startPos = screen.half.w - totalWidth / 2;
-
     // Create the Image
     prompt.image = Image.Text(passwordMessage, 1, 1, 1);
     prompt.sprite = Sprite(prompt.image);
@@ -176,6 +172,10 @@ fun DisplayPasswordCallback(nil, bulletCount) {
 
     // Checking if we are showing dots or not
     if (passwordTyping == "") {
+
+        // Calculate the position and size of the typing area
+        totalWidth = bulletCount * bulletImage.GetWidth();
+        startPos = screen.half.w - totalWidth / 2;
 
         // Clear all bullets (user might hit backspace)
         bullets = null;
@@ -188,9 +188,12 @@ fun DisplayPasswordCallback(nil, bulletCount) {
 
     } else {
 
+        // Calculate the position and size of the typing area
+        totalWidth = bulletCount * passwordImage.GetWidth();
+        startPos = screen.half.w - totalWidth / 2;
+
         // Clear the variable
         now = null;
-
         // Check if the password is being typed
         if (bulletCount >= 1) {
 
