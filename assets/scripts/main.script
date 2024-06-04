@@ -188,9 +188,6 @@ fun DisplayPasswordCallback(nil, bulletCount) {
 
     } else {
 
-        // Calculate the position and size of the typing area
-        startPos = screen.half.w - passwordImage.GetWidth() / 2;
-
         // Clear the variable
         now = null;
         // Check if the password is being typed
@@ -198,7 +195,7 @@ fun DisplayPasswordCallback(nil, bulletCount) {
 
             // Print only if required
             now.sprite = Sprite(passwordImage);
-            now.sprite.SetX(startPos * passwordImage.GetWidth());
+            now.sprite.SetX(screen.half.w - passwordImage.GetWidth() / 2);
             now.sprite.SetY(screen.h - 2 * passwordImage.GetHeight());
 
         }
