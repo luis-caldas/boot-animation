@@ -214,6 +214,7 @@ fun DisplayNormalCallback() {
     // Reset everything to normal
     status = "play";
     bullets = null;
+    now = null;
     prompt = null;
     message = null;
     question = null;
