@@ -3,6 +3,7 @@ numberImages = %NUM_IMAGES%;
 passwordMessage = "%PASS_MSG%";
 bulletCharacter = "%BULLET_CHAR%";
 passwordTyping = "%PASSWORD_TYPING%";
+passwordTypingAlt = "%PASSWORD_TYPING_ALT%";
 questionPrompt = "%QUESTION_PROMPT%";
 logoMessage = "%LOGO_MESSAGE%";
 
@@ -33,6 +34,7 @@ prompt = null;
 now = null;
 bulletImage = Image.Text(bulletCharacter, 1, 1, 1);
 passwordImage = Image.Text(passwordTyping, 1, 1, 1);
+passwordAltImage = Image.Text(passwordTypingAlt, 1, 1, 1);
 
 // Flow
 status = "play";
@@ -193,10 +195,20 @@ fun DisplayPasswordCallback(nil, bulletCount) {
         // Check if the password is being typed
         if (bulletCount >= 1) {
 
+            // Variable for the typing
+            typingImage = null;
+
+            // Check if we show the normal or the alternative
+            if (bulletCount % 2 == 0) {
+                typingImage = passwordAltImage;
+            } else {
+                typingImage = passwordImage;
+            }
+
             // Print only if required
-            now.sprite = Sprite(passwordImage);
-            now.sprite.SetX(screen.half.w - passwordImage.GetWidth() / 2);
-            now.sprite.SetY(screen.h - 2 * passwordImage.GetHeight());
+            now.sprite = Sprite(typingImage);
+            now.sprite.SetX(screen.half.w - typingImage.GetWidth() / 2);
+            now.sprite.SetY(screen.h - 2 * typingImage.GetHeight());
 
         }
 
