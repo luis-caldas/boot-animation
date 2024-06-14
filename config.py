@@ -21,7 +21,7 @@ REPLACE_SCRIPT = {
     "PASS_MSG": "Authenticate",
     "QUESTION_PROMPT": "Answer",
     "PASSWORD_TYPING": "...",
-    "PASSWORD_TYPING_ALT": "---",
+    "PASSWORD_TYPING_ALT": ".",
     "BULLET_CHAR": '•'
 }
 REPLACE_PLYMOUTH = {
